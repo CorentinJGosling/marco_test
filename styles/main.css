@@ -932,6 +932,13 @@ h3 {
   border: 1px solid #000;
   margin-top: 0.5rem;
 }
+@media screen and (max-width: 768px) {
+  #fullName,
+  #email_id,
+  #message {
+    width: 80vw;
+  }
+}
 
 #message {
   min-height: 100px;
@@ -960,6 +967,7 @@ h3 {
   display: none;
   color: green;
   font-size: 1.3rem;
+  margin-top: 1rem;
   margin-bottom: 1rem;
   width: 30rem;
   background-color: #fff;

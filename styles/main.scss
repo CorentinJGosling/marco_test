@@ -903,6 +903,10 @@ h3 {
   padding: 10px;
   border: 1px solid #000;
   margin-top: 0.5rem;
+
+  @media screen and (max-width: 768px) {
+    width: 80vw;
+  }
 }
 
 #message {
