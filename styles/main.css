@@ -689,31 +689,61 @@ h2 {
   box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px;
 }
 
-.about_us {
+.about_leaders,
+.about_team {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
   justify-content: space-evenly;
   gap: 2rem;
   color: #000;
   margin-top: 1rem;
   margin-right: 3rem;
   margin-left: 3rem;
+  margin-bottom: 5rem;
+}
+
+.about_leaders {
+  grid-template-columns: 1fr 1fr 1fr 1fr;
 }
 @media screen and (max-width: 1200px) {
-  .about_us {
+  .about_leaders {
     margin-right: 1rem;
     margin-left: 1rem;
+    justify-content: center;
   }
 }
 @media screen and (max-width: 1024px) {
-  .about_us {
+  .about_leaders {
     grid-template-columns: 1fr 1fr;
   }
 }
 @media screen and (max-width: 650px) {
-  .about_us {
+  .about_leaders {
     grid-template-columns: 1fr;
   }
+}
+
+.about_team {
+  grid-template-columns: auto auto;
+  gap: 3rem;
+  margin-right: 1rem;
+  margin-left: 1rem;
+  justify-content: center;
+}
+@media screen and (max-width: 650px) {
+  .about_team {
+    grid-template-columns: 1fr;
+  }
+}
+
+.memb {
+  max-width: 400px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: bottom;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .photo {
@@ -721,20 +751,12 @@ h2 {
   border: solid 2px #fff;
   -webkit-filter: grayscale(30%);
   filter: grayscale(30%);
-  width: 60%;
+  width: 200px;
 }
 @media screen and (max-width: 1024px) {
   .photo {
     width: 150px;
   }
-}
-
-.memb {
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: bottom;
 }
 
 .memb_name {
@@ -834,7 +856,9 @@ h2 {
 #read_more_textMS,
 #read_more_textCG,
 #read_more_textSC,
-#read_more_textJF {
+#read_more_textJF,
+#read_more_textVO,
+#read_more_textMP {
   width: 90%;
   margin-left: auto;
   margin-right: auto;
@@ -845,7 +869,9 @@ h2 {
   #read_more_textMS,
   #read_more_textCG,
   #read_more_textSC,
-  #read_more_textJF {
+  #read_more_textJF,
+  #read_more_textVO,
+  #read_more_textMP {
     padding: 0.5rem 0;
   }
 }
@@ -853,7 +879,9 @@ h2 {
   #read_more_textMS,
   #read_more_textCG,
   #read_more_textSC,
-  #read_more_textJF {
+  #read_more_textJF,
+  #read_more_textVO,
+  #read_more_textMP {
     max-height: 0;
     overflow: hidden;
     border: none;
