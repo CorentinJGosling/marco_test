@@ -1,0 +1,369 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+* {
+  // background-color: green;
+  margin: 0;
+  padding: 0;
+  font: inherit;
+  font-family: "Avenir Next LT Pro", sans-serif;
+  scroll-behavior: smooth;
+}
+img,
+picture,
+svg,
+video {
+  display: block;
+  max-width: 100vh;
+}
+// Navigation bar ============================================================
+// Navigation bar ============================================================
+// Navigation bar ============================================================
+// Navigation bar ============================================================
+// Navigation bar ============================================================
+// Navigation bar ============================================================
+nav {
+  position: fixed;
+  // border: 2px solid red;
+  width: 100%;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  background-color: #fff;
+  z-index: 9999;
+}
+.scrolled {
+  border-bottom: 1px solid #ddd; /* add a bottom border */
+  box-shadow: 100px 5px 33px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24); /* add a box-shadow */
+}
+
+.nav-links {
+  display: flex;
+  list-style: none;
+
+  @media screen and (max-width: 768px) {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    position: absolute;
+    top: 70px;
+    left: 0;
+    background-color: #333;
+    padding: 10px 0;
+  }
+}
+
+.nav-links li {
+  cursor: pointer;
+  padding: 1rem 2rem;
+}
+
+.nav-links a {
+  color: #333;
+  text-decoration: none;
+  font-weight: bold;
+  position: relative;
+
+  @media screen and (max-width: 768px) {
+    color: #fff;
+    font-weight: bold;
+  }
+}
+
+.nav-links .currentpage::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  transition: width 0.3s ease-in-out;
+  width: calc(100% - 20px);
+  background-color: #8b8b8b;
+  @media screen and (max-width: 768px) {
+    height: 5px;
+    bottom: -5px;
+    background-color: #f5f5f5;
+  }
+}
+.nav-links a::before {
+  @media screen and (min-width: 768px) {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 2px;
+    background-color: #333;
+    transition: width 0.3s ease-in-out;
+  }
+}
+
+.nav-links li:hover > a::before {
+  width: calc(100% - 20px);
+}
+
+.nav-links li:hover {
+  @media screen and (max-width: 768px) {
+    background-color: #8b8b8b;
+  }
+}
+.nav-links.open {
+  display: flex;
+}
+#hamburger-menu {
+  width: 60px;
+  height: 45px;
+  position: fixed;
+  // margin: 10px 10px;
+  display: none;
+  @media screen and (max-width: 768px) {
+    top: 10px;
+    left: 10px;
+    display: block;
+    position: fixed;
+    -webkit-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    transform: rotate(0deg);
+    -webkit-transition: 0.5s ease-in-out;
+    -moz-transition: 0.5s ease-in-out;
+    -o-transition: 0.5s ease-in-out;
+    transition: 0.5s ease-in-out;
+    cursor: pointer;
+  }
+}
+
+#hamburger-menu span {
+  display: block;
+  position: absolute;
+  height: 9px;
+  width: 50%;
+  background: #5d7c85;
+  opacity: 1;
+  -webkit-transform: rotate(0deg);
+  -moz-transform: rotate(0deg);
+  -o-transform: rotate(0deg);
+  transform: rotate(0deg);
+  -webkit-transition: 0.25s ease-in-out;
+  -moz-transition: 0.25s ease-in-out;
+  -o-transition: 0.25s ease-in-out;
+  transition: 0.25s ease-in-out;
+}
+
+#hamburger-menu span:nth-child(even) {
+  left: 50%;
+  border-radius: 0 9px 9px 0;
+}
+
+#hamburger-menu span:nth-child(odd) {
+  left: 0px;
+  border-radius: 9px 0 0 9px;
+}
+
+#hamburger-menu span:nth-child(1),
+#hamburger-menu span:nth-child(2) {
+  top: 0px;
+}
+
+#hamburger-menu span:nth-child(3),
+#hamburger-menu span:nth-child(4) {
+  top: 18px;
+}
+
+#hamburger-menu span:nth-child(5),
+#hamburger-menu span:nth-child(6) {
+  top: 36px;
+}
+
+#hamburger-menu.open span:nth-child(1),
+#hamburger-menu.open span:nth-child(6) {
+  -webkit-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+
+#hamburger-menu.open span:nth-child(2),
+#hamburger-menu.open span:nth-child(5) {
+  -webkit-transform: rotate(-45deg);
+  -moz-transform: rotate(-45deg);
+  -o-transform: rotate(-45deg);
+  transform: rotate(-45deg);
+}
+
+#hamburger-menu.open span:nth-child(1) {
+  left: 5px;
+  top: 7px;
+}
+
+#hamburger-menu.open span:nth-child(2) {
+  left: calc(50% - 5px);
+  top: 7px;
+}
+
+#hamburger-menu.open span:nth-child(3) {
+  left: -50%;
+  opacity: 0;
+}
+
+#hamburger-menu.open span:nth-child(4) {
+  left: 100%;
+  opacity: 0;
+}
+
+#hamburger-menu.open span:nth-child(5) {
+  left: 5px;
+  top: 29px;
+}
+
+#hamburger-menu.open span:nth-child(6) {
+  left: calc(50% - 5px);
+  top: 29px;
+}
+// Loading anim ===========================================================
+// Loading anim ===========================================================
+// Loading anim ===========================================================
+// Loading anim ===========================================================
+// Loading anim ===========================================================
+// Loading anim ===========================================================
+.wave {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #fff;
+  animation: fadeOut 1s ease-in-out forwards;
+  opacity: 1;
+}
+.fade {
+  opacity: 0;
+}
+
+.ball {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  margin: 0 10px;
+  background-color: #6c5ce7;
+  animation: wave 1s ease-in-out infinite;
+}
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  95% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0;
+    display: none;
+    pointer-events: none;
+  }
+}
+@keyframes wave {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+.ball:nth-child(1) {
+  background-color: #89bde5;
+}
+
+.ball:nth-child(2) {
+  animation-delay: -0.2s;
+  background-color: #c0ddef;
+}
+
+.ball:nth-child(3) {
+  animation-delay: -0.4s;
+  background-color: #e5eced;
+}
+
+.ball:nth-child(4) {
+  animation-delay: -0.6s;
+  background-color: #92a4d9;
+}
+
+.ball:nth-child(5) {
+  animation-delay: -0.8s;
+  background-color: #878cd9;
+}
+// section 1 =================================================================
+// section 1 =================================================================
+// section 1 =================================================================
+// section 1 =================================================================
+// section 1 =================================================================
+// section 1 =================================================================
+// section 1 =================================================================
+section {
+  padding: 3rem 0rem;
+}
+#psycho_hero {
+  padding-top: 5rem;
+  min-height: 80vh;
+  // border: 2px solid green;
+
+  padding-left: 4rem;
+  padding-right: 4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+h1 {
+  color: #000;
+  font-weight: 600;
+  text-align: center;
+  max-width: 30ch;
+  @media screen and (max-width: 480px) {
+    font-size: 1.7rem;
+  }
+  @media screen and (min-width: 480px) {
+    font-size: 1.9rem;
+  }
+  @media screen and (min-width: 768px) {
+    font-size: 2rem;
+  }
+  @media screen and (min-width: 1024px) {
+    font-size: 3rem;
+  }
+}
+// section 2 =================================================================
+// section 2 =================================================================
+// section 2 =================================================================
+// section 2 =================================================================
+// section 2=================================================================
+// section 2 =================================================================
+
+#psycho_material {
+  min-height: 80vh;
+  background-color: #add6ed;
+  // border: 2px solid green;
+
+  padding-left: 4rem;
+  padding-right: 4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
