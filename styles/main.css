@@ -403,7 +403,7 @@ section {
 }
 @media screen and (min-width: 1024px) {
   #sec_hero {
-    min-height: 70vh;
+    min-height: 80vh;
   }
 }
 #sec_hero .background-image {
