@@ -521,16 +521,21 @@ h2 {
 // Section 2 ========================================================
 #sec_what {
   background-color: #d7e5e9;
+  min-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 .sec2mid {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-evenly;
   // gap: 2rem;
-  margin-top: 2rem;
+  margin-top: 5rem;
   // border: 2px solid orange;
   @media screen and (max-width: 1024px) {
     gap: 1rem;
+    margin-top: 2rem;
   }
 }
 
@@ -682,6 +687,11 @@ h2 {
 // section 4 =================================================================
 // section 4 =================================================================
 
+#sec_team {
+  h3 {
+    margin-top: 2rem;
+  }
+}
 .about_leaders,
 .about_team {
   display: grid;

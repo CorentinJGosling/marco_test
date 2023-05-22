@@ -544,17 +544,22 @@ h2 {
 
 #sec_what {
   background-color: #d7e5e9;
+  min-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .sec2mid {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-evenly;
-  margin-top: 2rem;
+  margin-top: 5rem;
 }
 @media screen and (max-width: 1024px) {
   .sec2mid {
     gap: 1rem;
+    margin-top: 2rem;
   }
 }
 
@@ -697,6 +702,10 @@ h2 {
   transform: scale(1.005) translateZ(0);
   background-color: #cdcdf1;
   box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px;
+}
+
+#sec_team h3 {
+  margin-top: 2rem;
 }
 
 .about_leaders,
