@@ -5,10 +5,10 @@ account: ebiact
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 9154647
-bundleId: 7299981
+bundleId: 7301024
 url: https://ebiact.shinyapps.io/ebibd_database/
-when: 1685788215.76201
-lastSyncTime: 1685788215.76201
+when: 1685824575.50836
+lastSyncTime: 1685824575.50836
 asMultiple: FALSE
 asStatic: FALSE
 ignoredFiles: dat.xlsx|data_format.R|filtered_data.xlsx|img_cert.pptx|img_eff.pptx
