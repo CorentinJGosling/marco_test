@@ -1,0 +1,14 @@
+name: ebibd_database
+title: ebibd_database
+username:
+account: ebiact
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 9154647
+bundleId: 7299981
+url: https://ebiact.shinyapps.io/ebibd_database/
+when: 1685788215.76201
+lastSyncTime: 1685788215.76201
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: dat.xlsx|data_format.R|filtered_data.xlsx|img_cert.pptx|img_eff.pptx
