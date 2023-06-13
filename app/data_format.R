@@ -6,16 +6,16 @@ res$TE_lo = round(ifelse(res$ES_type=="SMD", res$ES_lowCI, log(res$ES_lowCI) * s
 res$TE_up = round(ifelse(res$ES_type=="SMD", res$ES_upCI, log(res$ES_upCI) * sqrt(3) / pi), 2)
 res$seTE = round(abs((res$TE_up - res$TE_lo)/3.92), 2)
 res$NNT_transit = round(dmetar::NNT(res$TE), 2)
-res$NNT = ifelse(res$NNT_transit > 0,
-                 paste0("NNT=", res$NNT_transit),
+res$eNNT = ifelse(res$NNT_transit > 0,
+                 paste0("eNNT=", res$NNT_transit),
                  ifelse(
                    res$NNT_transit == 0,
                    "N/A",
-                   paste0("NNH=", abs(res$NNT_transit))))
+                   paste0("eNNH=", abs(res$NNT_transit))))
 breaks <- c(-Inf, seq(-0.8, 0.8, length.out = 19), Inf)
 TE_cat <- cut(res$TE, breaks, labels = 1:20)
 res$Efficacy = paste0(
-  "SMD=", res$TE, " [", res$TE_lo, ", ", res$TE_up, "]", " <br> ",
+  "eSMD=", res$TE, " [", res$TE_lo, ", ", res$TE_up, "]", " <br> ",
   '<img src="https://www.linkpicture.com/q/Diapositive', TE_cat, '.png" height="30" width="60%" data-toggle="tooltip" data-placement="right"></img>'
 )
 res$Paper = paste0("<a href='https://doi.org/", res$`doi of PDF`, "' target=\"_blank\">", res$`First author`, " (", res$Year, ")", "</a>")
@@ -52,9 +52,9 @@ res$Outcome = stringr::str_trunc(res$Outcome, 20)
 res$Design[res$Design =="MA"] <- "Pairwise meta-analysis"
 res$Design[res$Design =="NMA"] <- "Network meta-analysis"
 rio::export(res[,c(
-  "Paper", "Intervention", "Outcome", "Efficacy", "NNT", "GRADE", "AMSTAR", "k", "Design",
-  "Age", "BD_stage", "Comparison", "Comparison_type",  "TE", "seTE", "GRADE, certainty of evidence", "Rank", "Meta_review",
-  "invTE"
+  "Paper", "Intervention", "Outcome", "Efficacy", "eNNT", "GRADE", "AMSTAR", "k", "Design",
+  "Age", "BD_stage", "Comparison", "Comparison_type",  "TE", "seTE", "Rank", "Meta_review",
+  "invTE", "TE_lo", "TE_up"
 )], "dat.txt")
 
 # source("plot_umb.R")

@@ -165,10 +165,10 @@ tags$style(
   }
   .row_boxes_plot{
     display: grid !important;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     justify-content: center;
     align-items: center;
-    gap: 1rem;
+    gap: 3rem;
     margin-top: 4rem;
     margin-bottom: 4rem;
     height: 100% !important;
@@ -373,7 +373,7 @@ server <- function(input, output, session) {
   output$comp_high = renderText({ paste0(nrow(filterData() %>% filter(Rank == "I (High)"))) })
   output$box_comp_high <- renderUI({ textOutput('comp_high') })
 
-  output$comp_eff = renderText({ paste0(nrow(filterData()  %>% filter(TE > 0))) })
+  output$comp_eff = renderText({ paste0(nrow(filterData()  %>% filter(TE_lo > 0 | TE_up < 0))) })
   output$box_comp_eff <- renderUI({ textOutput('comp_eff') })
 
   ########################################################
@@ -418,13 +418,13 @@ server <- function(input, output, session) {
       arrange(value) %>%
       top_n(15)
     res <- res[order(-res$value), ]
+
     plot_ly(res,
             x = ~value,
             y = ~Outcome, type = "bar",
             marker = list(color = ~value, colors = viridis_pal()(nrow(dat)))) %>%
       layout(xaxis = list(title = "Number of comparisons"),
-             yaxis = list(title = "Outcome",
-                          autorange = "reversed"))
+             yaxis = list(title = "Outcome", categoryorder = "total ascending"))
   })
 
   ######################################################
@@ -611,7 +611,7 @@ server <- function(input, output, session) {
             width = '180px',
             targets = 3),
           list(visible = FALSE,
-               targets = 13:18),
+               targets = 13:19),
           list(className = 'dt-center',
                targets = "_all")),
         buttons =
@@ -717,10 +717,13 @@ server <- function(input, output, session) {
                       random = FALSE,
                       overall=FALSE,
                       hetstat = FALSE,
-                      rightcols = c("effect.ci", "NNT"),
-                      rightlabs = c( "SMD [95% CI]", "NNT"),
+                      rightcols = c("effect.ci", "eNNT"),
+                      rightlabs = c( "eSMD [95% CI]", "eNNT / eNNH"),
                       leftcols = c("Meta_review", "Outcome", "Intervention", "Rank"),
-                      leftlabs = c("Meta_review", "Outcome", "Intervention", "GRADE"))
+                      leftlabs = c("Meta_review", "Outcome", "Intervention", "GRADE"),
+                      label.right = "Clinically beneficial",# col.label.right = "#49733E",
+                      label.left = "Clinically harmful "#, col.label.left = "#633434"
+    )
 
   )
 
