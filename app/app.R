@@ -611,7 +611,7 @@ server <- function(input, output, session) {
             width = '180px',
             targets = 3),
           list(visible = FALSE,
-               targets = 13:19),
+               targets = 13:21),
           list(className = 'dt-center',
                targets = "_all")),
         buttons =
@@ -721,8 +721,8 @@ server <- function(input, output, session) {
                       rightlabs = c( "eSMD [95% CI]", "eNNT / eNNH"),
                       leftcols = c("Meta_review", "Outcome", "Intervention", "Rank"),
                       leftlabs = c("Meta_review", "Outcome", "Intervention", "GRADE"),
-                      label.right = "Clinically beneficial",# col.label.right = "#49733E",
-                      label.left = "Clinically harmful "#, col.label.left = "#633434"
+                      label.right = "=> Clinically beneficial",# col.label.right = "#49733E",
+                      label.left = "Clinically harmful <="#, col.label.left = "#633434"
     )
 
   )

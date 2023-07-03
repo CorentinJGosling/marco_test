@@ -1,9 +1,10 @@
 res = readxl::read_excel("dat.xlsx")
 
-res$TE = round(ifelse(res$ES_type=="SMD", res$ES, log(res$ES) * sqrt(3) / pi), 2)
+res$Outcome = res$Outcome_new...50
+res$TE = round(ifelse(res$`ES_type...51`=="SMD", res$ES_checked, log(res$ES_checked) * sqrt(3) / pi), 2)
 res$invTE = -res$TE
-res$TE_lo = round(ifelse(res$ES_type=="SMD", res$ES_lowCI, log(res$ES_lowCI) * sqrt(3) / pi), 2)
-res$TE_up = round(ifelse(res$ES_type=="SMD", res$ES_upCI, log(res$ES_upCI) * sqrt(3) / pi), 2)
+res$TE_lo = round(ifelse(res$`ES_type...51`=="SMD", res$ES_lowCI_checked, log(res$ES_lowCI_checked) * sqrt(3) / pi), 2)
+res$TE_up = round(ifelse(res$`ES_type...51`=="SMD", res$ES_upCI_checked, log(res$ES_upCI_checked) * sqrt(3) / pi), 2)
 res$seTE = round(abs((res$TE_up - res$TE_lo)/3.92), 2)
 res$NNT_transit = round(dmetar::NNT(res$TE), 2)
 res$eNNT = ifelse(res$NNT_transit > 0,
@@ -36,7 +37,7 @@ res$GRADE = paste0(
   res$img_cert,
   '\" height=\"30\" data-toggle=\"tooltip\" data-placement=\"right\"',
   "\"></img>")
-res$AMSTAR <- res$'AMSTAR-2'
+res$AMSTAR <- res$`AMSTAR-2...59`
 res$AMSTAR[res$AMSTAR == "CRITICALLY LOW"] <- "Critically Low"
 res$AMSTAR[res$AMSTAR == "LOW"] <- "Low"
 res$AMSTAR[res$AMSTAR == "HIGH"] <- "High"
@@ -51,11 +52,15 @@ res$BD_stage <- res$BDstage
 res$Outcome = stringr::str_trunc(res$Outcome, 20)
 res$Design[res$Design =="MA"] <- "Pairwise meta-analysis"
 res$Design[res$Design =="NMA"] <- "Network meta-analysis"
-rio::export(res[,c(
+res$Comparison = res$Comparison
+
+
+exp_dat = res[,c(
   "Paper", "Intervention", "Outcome", "Efficacy", "eNNT", "GRADE", "AMSTAR", "k", "Design",
   "Age", "BD_stage", "Comparison", "Comparison_type",  "TE", "seTE", "Rank", "Meta_review",
-  "invTE", "TE_lo", "TE_up"
-)], "dat.txt")
+  "invTE", "TE_lo", "TE_up", "Intervention_acro", "Comparison_acro"
+)]
+rio::export(exp_dat, "dat.txt")
 
 # source("plot_umb.R")
 
