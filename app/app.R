@@ -1,7 +1,10 @@
 library(shiny)
+library(shinyjs)
 library(readxl)
 library(tidyverse)
 library(shinyWidgets)
+library(shinyalert)
+library(rintrojs)
 library(DT)
 library(rio)
 library(shinycssloaders)
@@ -13,7 +16,205 @@ library(viridis)
 library(ggiraph)
 library(plotly)
 
-dat <- read.delim("dat.txt")
+selectizeGroupServer_modified <-
+  function(input, output, session, data, vars) {
+    `%inT%` <- function(x, table) {
+      if (!is.null(table) && !"" %in% table) {
+        x %in% table
+      } else {
+        rep_len(TRUE, length(x))
+      }
+    }
+
+    ns <- session$ns
+    shinyWidgets:::toggleDisplayServer(
+      session = session, id = ns("reset_all"),
+      display = "none"
+    )
+    rv <- reactiveValues(data = NULL, vars = NULL)
+    observe({
+      if (is.reactive(data)) {
+        rv$data <- data()
+      } else {
+        rv$data <- as.data.frame(data)
+      }
+      if (is.reactive(vars)) {
+        rv$vars <- vars()
+      } else {
+        rv$vars <- vars
+      }
+      for (var in names(rv$data)) {
+        if (var %in% rv$vars) {
+          shinyWidgets:::toggleDisplayServer(session = session, id = ns(paste0(
+            "container-",
+            var
+          )), display = "table-cell")
+        } else {
+          shinyWidgets:::toggleDisplayServer(session = session, id = ns(paste0(
+            "container-",
+            var
+          )), display = "none")
+        }
+      }
+    })
+    observe({
+      lapply(X = rv$vars, FUN = function(x) {
+        vals <- sort(unique(rv$data[[x]]))
+        updateSelectizeInput(
+          session = session, inputId = x,
+          choices = vals, server = TRUE
+        )
+      })
+    })
+    observeEvent(input$reset_all, {
+      lapply(X = rv$vars, FUN = function(x) {
+        vals <- sort(unique(rv$data[[x]]))
+        updateSelectizeInput(
+          session = session, inputId = x,
+          choices = vals, server = TRUE
+        )
+      })
+    })
+    observe({
+      vars <- rv$vars
+      lapply(X = vars, FUN = function(x) {
+        ovars <- vars[vars != x]
+        observeEvent(input[[x]],
+                     {
+                       data <- rv$data
+                       indicator <- lapply(X = vars, FUN = function(x) {
+                         data[[x]] %inT% input[[x]]
+                       })
+                       indicator <- Reduce(f = `&`, x = indicator)
+                       data <- data[indicator, ]
+                       if (all(indicator)) {
+                         shinyWidgets:::toggleDisplayServer(
+                           session = session, id = ns("reset_all"),
+                           display = "none"
+                         )
+                       } else {
+                         shinyWidgets:::toggleDisplayServer(
+                           session = session, id = ns("reset_all"),
+                           display = "block"
+                         )
+                       }
+                       for (i in ovars) {
+                         if (is.null(input[[i]])) {
+                           updateSelectizeInput(
+                             session = session, inputId = i,
+                             choices = sort(unique(data[[i]])), server = TRUE
+                           )
+                         }
+                       }
+                       if (is.null(input[[x]])) {
+                         updateSelectizeInput(
+                           session = session, inputId = x,
+                           choices = sort(unique(data[[x]])), server = TRUE
+                         )
+                       }
+                     },
+                     ignoreNULL = FALSE,
+                     ignoreInit = TRUE
+        )
+      })
+    })
+
+    observe({
+      updateSelectInput(inputId = "Age",
+                        choices = unique(rv$data$Age),
+                        selected = "Adults")
+      updateSelectInput(inputId = "BD_stage",
+                        choices = unique(rv$data$BD_stage),
+                        selected = "Bipolar Depression")
+      updateSelectInput(inputId = "Comparison",
+                        choices = unique(rv$data$Comparison),
+                        selected = "placebo (mono)")
+    })
+
+
+    return(reactive({
+      data <- rv$data
+      vars <- rv$vars
+      indicator <- lapply(X = vars, FUN = function(x) {
+        `%inT%`(data[[x]], input[[x]])
+      })
+      indicator <- Reduce(f = `&`, x = indicator)
+      data <- data[indicator, ]
+      return(data)
+    }))
+  }
+
+# UI MODULE ---------------------------------------------------------------
+
+
+selectizeGroupUI_custom <-
+  function(id, params, label = NULL, btn_label = "Reset filters", inline = TRUE) {
+    ns <- NS(id)
+    if (inline) {
+      selectizeGroupTag <- tagList(
+        ##### NEW LOCATION FOR THE BUTTON #####
+        actionButton(
+          inputId = ns("reset_all"), label = btn_label,
+          style = "float: left;"
+          ##### NEW LOCATION FOR THE BUTTON #####
+        ),
+        tags$b(label), tags$div(
+          class = "btn-group-justified selectize-group",
+          role = "group", `data-toggle` = "buttons", lapply(
+            X = seq_along(params),
+            FUN = function(x) {
+              input <- params[[x]]
+              tagSelect <- tags$div(
+                class = "btn-group",
+                id = ns(paste0("container-", input$inputId)),
+                selectizeInput(
+                  inputId = ns(input$inputId),
+                  label = input$title, choices = input$choices,
+                  selected = input$selected, multiple = ifelse(is.null(input$multiple),
+                                                               TRUE, input$multiple
+                  ), width = "100%",
+                  options = list(
+                    placeholder = input$placeholder,
+                    plugins = list("remove_button"), onInitialize = I("function() { this.setValue(\"\"); }")
+                  )
+                )
+              )
+              return(tagSelect)
+            }
+          )
+        )
+      )
+    } else {
+      selectizeGroupTag <- tagList(tags$b(label), lapply(
+        X = seq_along(params),
+        FUN = function(x) {
+          input <- params[[x]]
+          tagSelect <- selectizeInput(
+            inputId = ns(input$inputId),
+            label = input$title, choices = input$choices,
+            selected = input$selected, multiple = ifelse(is.null(input$multiple),
+                                                         TRUE, input$multiple
+            ), width = "100%", options = list(
+              placeholder = input$placeholder,
+              plugins = list("remove_button"), onInitialize = I("function() { this.setValue(\"\"); }")
+            )
+          )
+          return(tagSelect)
+        }
+      ), actionLink(
+        inputId = ns("reset_all"), label = btn_label,
+        icon = icon("remove"), style = "float: right;"
+      ))
+    }
+    tagList(
+      singleton(tagList(tags$link(
+        rel = "stylesheet", type = "text/css",
+        href = "shinyWidgets/modules/styles-modules.css"
+      ), shinyWidgets:::toggleDisplayUi())),
+      selectizeGroupTag
+    )
+  }
+
 
 callback <- c(
   "table.on('mouseover', 'td', function(){",
@@ -51,18 +252,16 @@ tags$style(
   }
 
   .split {
-     display: flex;
+     display: flex !important;
      gap: 1rem;
      # justify-content: space-between;
-     max-height: 95vh !important;
      max-width: 99vw !important;
-     # overflow: scroll;
-     # border: 2px solid blue;
-  }
+ }
  .left {
+   display: flex !important;
+   flex-direction: column;
    background-color: #add6ed;
-   max-height: 95vh !important;
-   overflow: hidden;
+   width: 25vw !important;
    padding: 1rem;
    border-radius: 10px;
   }
@@ -71,7 +270,7 @@ tags$style(
      background-color: #fff;
      overflow-x: hidden;
      width: 100% !important;
-     max-height: 95vh !important;
+     width: 75vw !important;
    }
   .sliders{
     display: flex;
@@ -204,11 +403,19 @@ tags$style(
     margin-bottom: 3rem;
     padding-bottom: 3rem;
   }
-  #forest_warning{
-    margin-top: 1rem;
+  #warning{
+    margin-top: 5rem;
     max-width: 80ch !important;
     margin-left: auto;
     margin-right: auto;
+    border: 2px solid red;
+    padding: 1rem;
+    background-color: #F4DEDE;
+  }
+  #my_filters{
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2rem !important;
   }
 
   @media (max-width: 800px) {
@@ -222,11 +429,11 @@ tags$style(
   }
   .left{
       width: 100% !important;
-      display: flex !important;
-      flex-direction: column !important;
-      align-items: center !important;
-      justify-content: center !important;
-      text-align : center !important;
+      # display: flex !important;
+      # flex-direction: column !important;
+      # align-items: center !important;
+      # justify-content: center !important;
+      # text-align : center !important;
       overflow-y: scroll !important;
   }
   .row_boxes{
@@ -249,26 +456,40 @@ tags$style(
     height: auto !important;
 
   }
-  #forest_warning{
+  #warning{
     margin-top: 2rem !important;
   }
 
  }
 
 ")),
+shinyjs::useShinyjs(),
+introjsUI(),
+
+inlineCSS(list(.grey = "opacity: 0.5 !important;",
+               .disappear = "display: none !important;")),
+
 div(class = "split",
     # filtering panel ========================
     div(class = "left",
         h3("Filtering panel"),
-        pickerInput("Age", label ="Age", choices= NULL, multiple = TRUE, selected = NULL),
-        pickerInput("BD_stage", label ="Bipolar Stage", choices= NULL, multiple = TRUE, selected = NULL),
-        pickerInput("Intervention", label ="Intervention", choices= NULL, multiple = TRUE, selected = NULL),
-        pickerInput("Outcome", label ="Outcome", choices= NULL, multiple = TRUE, selected = NULL),
-        pickerInput("design", label ="Type of meta-analysis", choices= NULL, multiple = TRUE, selected = NULL),
-        pickerInput("GRADE", label ="GRADE", choices= NULL, multiple = TRUE, selected = NULL),
-        pickerInput("AMSTAR", label ="AMSTAR", choices= NULL, multiple = TRUE, selected = NULL),
-        br(),
-        actionButton("download_button", "Download data") #
+        selectizeGroupUI_custom(
+          inline = FALSE,
+          id = "my_filters",
+          btn_label = "Show all data",
+          params = list(
+            Age = list(inputId = "Age", title  = "Age",  placeholder = 'Nothing selected'),
+            BD_stage = list(inputId = "BD_stage", title  = "Bipolar stage", placeholder = 'Nothing selected'),
+            Intervention = list(inputId = "Intervention", title  = "Intervention", placeholder = 'Nothing selected'),
+            Outcome = list(inputId = "Outcome", title  = "Outcome", placeholder = 'Nothing selected'),
+            Comparison = list(inputId = "Comparison", title  = "Comparison", placeholder = 'Nothing selected'),
+            Design = list(inputId = "Design", title  = "Type of meta-analysis", placeholder = 'Nothing selected'),
+            Rank = list(inputId = "Rank", title  = "GRADE", placeholder = 'Nothing selected'),
+            AMSTAR = list(inputId = "AMSTAR", title  = "AMSTAR", placeholder = 'Nothing selected')
+          )
+        ),
+        br()
+        # actionButton("download_button", "Download data") #
     ),
     # database & forest plot panel ==========
     div(class = "right",
@@ -283,15 +504,21 @@ div(class = "split",
                                div(class = "row_boxes",
                                      div(class = "box",
                                          div(class = "box_text", p("Overall number of comparisons")),
-                                         div(class = "box_num", uiOutput('box_comp_n')),
+                                         div(class = "box_num",
+                                             textOutput('comp_n')),
+                                             # uiOutput('box_comp_n')),
                                      ),
                                      div(class = "box",
                                          div(class = "box_text", p("Comparisons with treatment superior to control")),
-                                         div(class = "box_num", uiOutput('box_comp_eff')),
+                                         div(class = "box_num",
+                                             textOutput('comp_eff')),
+                                             # uiOutput('box_comp_eff')),
                                      ),
                                      div(class = "box",
                                            div(class = "box_text", p("Comparisons with a High GRADE rating")),
-                                           div(class = "box_num", uiOutput('box_comp_high')),
+                                           div(class = "box_num",
+                                               textOutput('comp_high')),
+                                              # uiOutput('box_comp_high')),
                                        ),
                                    ),
 
@@ -299,7 +526,7 @@ div(class = "split",
                                    div(class = "box_plot",
                                        div(class = "plot_text",
                                            p(paste("Top 15 most studied interventions"))),
-                                       div(class = "row_plots", girafeOutput("circle_interventions"))
+                                       div(class = "row_plots", plotlyOutput("circle_interventions"))
                                    ),
                                    div(class = "box_plot",
                                        div(class = "plot_text", p("Top 15 most studied outcome")),
@@ -312,16 +539,35 @@ div(class = "split",
                                ),
                                div(class = "box_plot",
                                    div(class = "plot_text", p("Forest plot of the pooled effect sizes")),
-                                   uiOutput('forest_warning'),
+                                   div(class="plot_warning", textOutput('warning')),
+                                   # plotOutput('forest', height = 200 * 14 + 500)
+                                   # uiOutput('forest_warning'),
                                    uiOutput('forest_container')
+
                                ))
                     ),
 
-                      tabPanel("Database",
-                               div(class = "table",
-                                   shinycssloaders::withSpinner(
-                                     DT::DTOutput("table_container")))),
-                      )
+                    tabPanel("Database",
+                             div(class = "table",
+                                 shinycssloaders::withSpinner(
+                                   DT::DTOutput("table_container")))),
+                    tabPanel("Compare",
+                             div(class = "radar_table",
+                                 h1("Visualise efficacy of interventions"),
+                                 p("If no filter is applied, we plot the top 3 interventions on the top 3 outcomes"),
+                                 p("Of note, to enable meaningful comparisons, we restricted this section to interventions compared to a placebo-only group."),
+                                 selectizeGroupUI(
+                                   id = "my_filters_radar",
+                                   inline = TRUE,
+                                   params = list(
+                                     Intervention = list(inputId = "Intervention", title  = "Intervention", placeholder = 'Nothing selected'),
+                                     Outcome = list(inputId = "Outcome", title  = "Outcome", placeholder = 'Nothing selected')
+                                   )
+                                 ),
+                                 actionButton("btn_alert", "How to interpret this plot?"),
+                                 shinycssloaders::withSpinner(plotlyOutput("radar_plot"))
+                                 )),
+        )
 
     )
 
@@ -334,80 +580,122 @@ server <- function(input, output, session) {
   ##################### DATA ########################
   ###################################################
   # raw data stored locally
-  dat <- read.delim("dat.txt")
+  dat <- readRDS("dat.RDS")
+  # https://www.davidsolito.com/post/conditional-drop-down-in-shiny/
+  # https://heds.nz/posts/dependent-selectInputs-shiny/
+  ######################################################
+  ##################### FILTERS ########################
+  ######################################################
+  filterData <- callModule(
+    module = selectizeGroupServer_modified,
+    id = "my_filters",
+    data = dat,
+    vars = c("Age", "BD_stage", "Intervention",
+             "Outcome", "Comparison", "Design", "Rank", "AMSTAR")
+  )
 
-  filterData <- reactive({
-    filteredData <- dat
+  ####################################################
+  ##################### values #######################
+  ####################################################
+  row_filtered_data = reactive({ nrow(filterData()) })
+  row_rank_one = reactive({ nrow(filterData() %>% filter(Rank == "I (High)")) })
+  row_eff = reactive({ nrow(filterData()  %>% filter(TE_lo > 0)) })
+  Wdth = reactive({ shinybrowser::get_width() })
 
-    if (isTruthy(input$Age)) {
-      filteredData <- filteredData %>% filter(Age %in% input$Age)
+  filterDataPlot <- reactive({
+    if (row_filtered_data() > 50) {
+      filterData()[order(filterData()[, 'Rank'], abs(filterData()[, 'invTE'])), ][1:50, ]
+    } else {
+      filterData()
     }
-    if (isTruthy(input$Intervention)) {
-      filteredData <- filteredData %>% filter(Intervention %in% input$Intervention)
-    }
-    if (isTruthy(input$Outcome)) {
-      filteredData <- filteredData %>% filter(Outcome %in% input$Outcome)
-    }
-    if (isTruthy(input$GRADE)) {
-      filteredData <- filteredData %>% filter(Rank %in% input$GRADE)
-    }
-    if (isTruthy(input$BD_stage)) {
-      filteredData <- filteredData %>% filter(BD_stage %in% input$BD_stage)
-    }
-    if (isTruthy(input$design)) {
-      filteredData <- filteredData %>% filter(Design %in% input$design)
-    }
-    if (isTruthy(input$AMSTAR)) {
-      filteredData <- filteredData %>% filter(AMSTAR %in% input$AMSTAR)
-    }
-
-    filteredData
   })
+  row_plot_data = reactive({ nrow(filterDataPlot()) })
 
   ####################################################
   ##################### BOXES ########################
   ####################################################
-  output$comp_n = renderText({ paste0(nrow(filterData())) })
-  output$box_comp_n <- renderUI({ textOutput('comp_n') })
-
-  output$comp_high = renderText({ paste0(nrow(filterData() %>% filter(Rank == "I (High)"))) })
-  output$box_comp_high <- renderUI({ textOutput('comp_high') })
-
-  output$comp_eff = renderText({ paste0(nrow(filterData()  %>% filter(TE_lo > 0 | TE_up < 0))) })
-  output$box_comp_eff <- renderUI({ textOutput('comp_eff') })
+  output$comp_n = renderText({ paste0(row_filtered_data()) })
+  output$comp_high = renderText({ paste0(row_rank_one()) })
+  output$comp_eff = renderText({ paste0(row_eff()) })
 
   ########################################################
   ##################### DASHBOARD ########################
   ########################################################
-  output$circle_interventions <- renderGirafe({
+  output$circle_interventions <- renderPlotly({
     # https://rdrr.io/github/djpr-data/djprshiny/man/djpr_girafe.html
+
+
+
     res <- filterData() %>%
-      group_by(Intervention) %>%
+    # res <- dat %>%
+      # filter(Age == "Adults" & BD_stage == "Bipolar Depression" & Intervention == "lithium (mono)" & Comparison == "placebo (mono)") %>%
+      # filter(Age == "Adults" & BD_stage == "Bipolar Depression" & Comparison == "placebo (mono)") %>%
+      # filter(Age == "Adults" & BD_stage == "Bipolar Depression" &
+      #          Intervention == "aripiprazole (mono)" &
+      #          Comparison == "placebo (mono)") %>%
+      mutate(es_pos = ifelse(TE_lo > 0, "effective",
+                             ifelse(TE_up < 0, "harmful", "no_effect"))) %>%
+      group_by(Intervention, es_pos) %>%
       summarise(value=n()) %>%
-      arrange(value) %>%
-      top_n(15)
-    packing <- circleProgressiveLayout(res$value, sizetype='area')
-    packing$radius <- 0.95*packing$radius
-    data <- cbind(res, packing)
-    data$text <- paste("Intervention name: ", data$Intervention, "\n",
-                       "Number of comparisons: ", data$value, "\n")
+      group_by(Intervention) %>%
+      mutate(Intervention_double = n(),
+             n_total = sum(value)) %>%
+      ungroup()
 
-    dat.gg <- circleLayoutVertices(packing, npoints=50)
+    if (nrow(res) > 50) {
+      res <- res %>%
+        filter(Intervention_double > 1 & n_total %in% tail(sort(n_total), 50))
+    }
+    res <- res %>%
+      pivot_wider(names_from = es_pos,
+                  values_from = value)
 
-    p <- ggplot() +
-      geom_polygon_interactive(data = dat.gg,
-                               aes(x, y, group = id, fill=id,
-                                   tooltip = data$text[id], data_id = id),
-                               colour = "black", alpha = 0.4) +
-      scale_fill_viridis() +
-      geom_text(data = data, aes(x, y, label = substr(Intervention, 1, 4)),
-                size=2, color="black") +
-      theme_void() +
-      theme(legend.position="none", plot.margin=unit(c(0,0,0,0),"cm") ) +
-      coord_equal()
+    res <- res[order(-res$n_total), ]
 
-    # girafe(ggobj = p, width_svg = 7, height_svg = 7)
-    girafe(ggobj = p)
+    if (!"harmful" %in% colnames(res)) {
+      res$harmful = 0
+    }
+    if (!"no_effect" %in% colnames(res)) {
+      res$no_effect = 0
+    }
+    if (!"effective" %in% colnames(res)) {
+      res$effective = 0
+    }
+
+    fig <- plot_ly(res, x = ~effective, y = ~Intervention, type = 'bar', name = 'Beneficial',
+                   marker = list(color = 'rgb(127,207,162)'))
+
+    fig <- fig %>% add_trace(x = ~no_effect, name = 'No effect (not significant)',
+                             marker = list(color = 'rgb(213,213,213)'))
+
+    fig <- fig %>% add_trace(x = ~harmful, name = 'Harmful',
+                             marker = list(color = 'rgb(217,143,143)'))
+
+    fig <- fig %>% layout(xaxis = list(title = 'Total number of comparisons'),
+                          yaxis = list(title = "", categoryorder = "total ascending"),
+                          barmode = 'stack')
+
+
+    # packing <- circleProgressiveLayout(res$value, sizetype='area')
+    # packing$radius <- 0.95*packing$radius
+    # data <- cbind(res, packing)
+    # data$text <- paste("Intervention name: ", data$Intervention, "\n",
+    #                    "Number of comparisons: ", data$value, "\n")
+    #
+    # dat.gg <- circleLayoutVertices(packing, npoints=50)
+    #
+    # p <- ggplot() +
+    #   geom_polygon_interactive(data = dat.gg,
+    #                            aes(x, y, group = id, fill=id,
+    #                                tooltip = data$text[id], data_id = id),
+    #                            colour = "black", alpha = 0.4) +
+    #   scale_fill_viridis() +
+    #   geom_text(data = data, aes(x, y, label = substr(Intervention, 1, 4)),
+    #             size=2, color="black") +
+    #   theme_void() +
+    #   theme(legend.position="none", plot.margin=unit(c(0,0,0,0),"cm") ) +
+    #   coord_equal()
+    # girafe(ggobj = p)
 
   })
 
@@ -427,162 +715,7 @@ server <- function(input, output, session) {
              yaxis = list(title = "Outcome", categoryorder = "total ascending"))
   })
 
-  ######################################################
-  ##################### FILTERS ########################
-  ######################################################
 
-  observe({
-    updatePickerInput(session, 'Age', choices = unique(dat$Age))
-    updatePickerInput(session, 'BD_stage', choices = unique(dat$BD_stage))
-    updatePickerInput(session, 'Intervention', choices = unique(dat$Intervention))
-    updatePickerInput(session, 'Outcome', choices = unique(dat$Outcome))
-    updatePickerInput(session, 'design', choices = unique(dat$Design))
-    updatePickerInput(session, 'GRADE', choices = unique(dat$Rank))
-    updatePickerInput(session, 'AMSTAR', choices = unique(dat$AMSTAR))
-  })
-
-  observeEvent(input$Age, {
-    if (isTruthy(input$Age)) {
-      val = input$Age
-    } else {
-      val = unique(dat$Age)
-    }
-
-    filtered_values_BD <- sort(unique(dat$BD_stage[dat$Age %in% val]))
-    filtered_values_DES <- sort(unique(dat$design[dat$Age %in% val]))
-    filtered_values_GRA <- sort(unique(dat$Rank[dat$Age %in% val]))
-    filtered_values_AMS <- sort(unique(dat$AMSTAR[dat$Age %in% val]))
-    filtered_values_INT <- sort(unique(dat$Intervention[dat$Age %in% val]))
-    filtered_values_OUT <- sort(unique(dat$Outcome[dat$Age %in% val]))
-    updatePickerInput(session, 'Intervention', choices = filtered_values_INT, selected = input$Intervention)
-    updatePickerInput(session, 'Outcome', choices = filtered_values_OUT, selected = input$Outcome)
-    updatePickerInput(session, 'BD_stage', choices = filtered_values_BD, selected = input$BD_stage)
-    updatePickerInput(session, 'design', choices = filtered_values_DES, selected = input$design)
-    updatePickerInput(session, 'GRADE', choices = filtered_values_GRA, selected = input$GRADE)
-    updatePickerInput(session, 'AMSTAR', choices = filtered_values_AMS, selected = input$AMSTAR)
-  }, ignoreNULL=FALSE)
-
-  observeEvent(input$BD_stage, {
-    if (isTruthy(input$BD_stage)) {
-      val = input$BD_stage
-    } else {
-      val = sort(unique(dat$BD_stage))
-    }
-
-    filtered_values_AGE <- sort(unique(dat$Age[dat$BD_stage %in% val]))
-    filtered_values_DES <- sort(unique(dat$design[dat$BD_stage %in% val]))
-    filtered_values_GRA <- sort(unique(dat$Rank[dat$BD_stage %in% val]))
-    filtered_values_AMS <- sort(unique(dat$AMSTAR[dat$BD_stage %in% val]))
-    filtered_values_INT <- sort(unique(dat$Intervention[dat$Age %in% val]))
-    filtered_values_OUT <- sort(unique(dat$Outcome[dat$Age %in% val]))
-    updatePickerInput(session, 'Intervention', choices = filtered_values_INT, selected = input$Intervention)
-    updatePickerInput(session, 'Outcome', choices = filtered_values_OUT, selected = input$Outcome)
-    updatePickerInput(session, 'Age', choices = filtered_values_AGE, selected = input$Age)
-    updatePickerInput(session, 'design', choices = filtered_values_DES, selected = input$design)
-    updatePickerInput(session, 'GRADE', choices = filtered_values_GRA, selected = input$GRADE)
-    updatePickerInput(session, 'AMSTAR', choices = filtered_values_AMS, selected = input$AMSTAR)
-  }, ignoreNULL=FALSE)
-  observeEvent(input$design, {
-    if (isTruthy(input$design)) {
-      val = input$design
-    } else {
-      val = sort(unique(dat$Design))
-    }
-
-    filtered_values_BD <- sort(unique(dat$BD_stage[dat$Design %in% val]))
-    filtered_values_AGE <- sort(unique(dat$Age[dat$Design %in% val]))
-    filtered_values_GRA <- sort(unique(dat$Rank[dat$Design %in% val]))
-    filtered_values_AMS <- sort(unique(dat$AMSTAR[dat$Design %in% val]))
-    filtered_values_INT <- sort(unique(dat$Intervention[dat$Age %in% val]))
-    filtered_values_OUT <- sort(unique(dat$Outcome[dat$Age %in% val]))
-    updatePickerInput(session, 'Intervention', choices = filtered_values_INT, selected = input$Intervention)
-    updatePickerInput(session, 'Outcome', choices = filtered_values_OUT, selected = input$Outcome)
-    updatePickerInput(session, 'BD_stage', choices = filtered_values_BD, selected = input$BD_stage)
-    updatePickerInput(session, 'Age', choices = filtered_values_AGE, selected = input$Age)
-    updatePickerInput(session, 'GRADE', choices = filtered_values_GRA, selected = input$GRADE)
-    updatePickerInput(session, 'AMSTAR', choices = filtered_values_AMS, selected = input$AMSTAR)
-  }, ignoreNULL=FALSE)
-  observeEvent(input$GRADE, {
-    if (isTruthy(input$GRADE)) {
-      val = input$GRADE
-    } else {
-      val = sort(unique(dat$Rank))
-    }
-
-    filtered_values_BD <- sort(unique(dat$BD_stage[dat$Rank %in% val]))
-    filtered_values_DES <- sort(unique(dat$design[dat$Rank %in% val]))
-    filtered_values_AGE <- sort(unique(dat$Age[dat$Rank %in% val]))
-    filtered_values_AMS <- sort(unique(dat$AMSTAR[dat$Rank %in% val]))
-    filtered_values_INT <- sort(unique(dat$Intervention[dat$Age %in% val]))
-    filtered_values_OUT <- sort(unique(dat$Outcome[dat$Age %in% val]))
-    updatePickerInput(session, 'Intervention', choices = filtered_values_INT, selected = input$Intervention)
-    updatePickerInput(session, 'Outcome', choices = filtered_values_OUT, selected = input$Outcome)
-    updatePickerInput(session, 'BD_stage', choices = filtered_values_BD, selected = input$BD_stage)
-    updatePickerInput(session, 'design', choices = filtered_values_DES, selected = input$design)
-    updatePickerInput(session, 'Age', choices = filtered_values_AGE, selected = input$Age)
-    updatePickerInput(session, 'AMSTAR', choices = filtered_values_AMS, selected = input$AMSTAR)
-  }, ignoreNULL=FALSE)
-  observeEvent(input$AMSTAR, {
-    if (isTruthy(input$AMSTAR)) {
-      val = input$AMSTAR
-    } else {
-      val = sort(unique(dat$AMSTAR))
-    }
-
-    filtered_values_BD <- sort(unique(dat$BD_stage[dat$AMSTAR %in% val]))
-    filtered_values_DES <- sort(unique(dat$design[dat$AMSTAR %in% val]))
-    filtered_values_GRA <- sort(unique(dat$Rank[dat$AMSTAR %in% val]))
-    filtered_values_AGE <- sort(unique(dat$Age[dat$AMSTAR %in% val]))
-    filtered_values_INT <- sort(unique(dat$Intervention[dat$Age %in% val]))
-    filtered_values_OUT <- sort(unique(dat$Outcome[dat$Age %in% val]))
-    updatePickerInput(session, 'Intervention', choices = filtered_values_INT, selected = input$Intervention)
-    updatePickerInput(session, 'Outcome', choices = filtered_values_OUT, selected = input$Outcome)
-    updatePickerInput(session, 'BD_stage', choices = filtered_values_BD, selected = input$BD_stage)
-    updatePickerInput(session, 'design', choices = filtered_values_DES, selected = input$design)
-    updatePickerInput(session, 'GRADE', choices = filtered_values_GRA, selected = input$GRADE)
-    updatePickerInput(session, 'Age', choices = filtered_values_AGE, selected = input$Age)
-  }, ignoreNULL=FALSE)
-
-  observeEvent(input$Intervention, {
-    if (isTruthy(input$Intervention)) {
-      val = input$Intervention
-    } else {
-      val = sort(unique(dat$Intervention))
-    }
-
-    filtered_values_BD <- sort(unique(dat$BD_stage[dat$Intervention %in% val]))
-    filtered_values_DES <- sort(unique(dat$design[dat$Intervention %in% val]))
-    filtered_values_AGE <- sort(unique(dat$Age[dat$Intervention %in% val]))
-    filtered_values_AMS <- sort(unique(dat$AMSTAR[dat$Intervention %in% val]))
-    filtered_values_GRA <- sort(unique(dat$Rank[dat$Intervention %in% val]))
-    filtered_values_OUT <- sort(unique(dat$Outcome[dat$Intervention %in% val]))
-    updatePickerInput(session, 'Outcome', choices = filtered_values_OUT, selected = input$Outcome)
-    updatePickerInput(session, 'BD_stage', choices = filtered_values_BD, selected = input$BD_stage)
-    updatePickerInput(session, 'design', choices = filtered_values_DES, selected = input$design)
-    updatePickerInput(session, 'GRADE', choices = filtered_values_GRA, selected = input$GRADE)
-    updatePickerInput(session, 'Age', choices = filtered_values_AGE, selected = input$Age)
-    updatePickerInput(session, 'AMSTAR', choices = filtered_values_AMS, selected = input$AMSTAR)
-  }, ignoreNULL=FALSE)
-  observeEvent(input$Outcome, {
-    if (isTruthy(input$Outcome)) {
-      val = input$Outcome
-    } else {
-      val = sort(unique(dat$Outcome))
-    }
-
-    filtered_values_BD <- sort(unique(dat$BD_stage[dat$Outcome %in% val]))
-    filtered_values_DES <- sort(unique(dat$design[dat$Outcome %in% val]))
-    filtered_values_GRA <- sort(unique(dat$Rank[dat$Outcome %in% val]))
-    filtered_values_AGE <- sort(unique(dat$Age[dat$Outcome %in% val]))
-    filtered_values_INT <- sort(unique(dat$Intervention[dat$Outcome %in% val]))
-    filtered_values_AMS <- sort(unique(dat$AMSTAR[dat$Outcome %in% val]))
-    updatePickerInput(session, 'Intervention', choices = filtered_values_INT, selected = input$Intervention)
-    updatePickerInput(session, 'BD_stage', choices = filtered_values_BD, selected = input$BD_stage)
-    updatePickerInput(session, 'design', choices = filtered_values_DES, selected = input$design)
-    updatePickerInput(session, 'GRADE', choices = filtered_values_GRA, selected = input$GRADE)
-    updatePickerInput(session, 'Age', choices = filtered_values_AGE, selected = input$Age)
-    updatePickerInput(session, 'AMSTAR', choices = filtered_values_AMS, selected = input$AMSTAR)
-  }, ignoreNULL=FALSE)
 
 
   # ============================================================= #
@@ -611,7 +744,7 @@ server <- function(input, output, session) {
             width = '180px',
             targets = 3),
           list(visible = FALSE,
-               targets = 13:21),
+               targets = 13:22),
           list(className = 'dt-center',
                targets = "_all")),
         buttons =
@@ -629,73 +762,39 @@ server <- function(input, output, session) {
     });"
       )
     )
-    # %>%
-    #   DT::formatStyle(
-    #     selector = 'th',
-    #     fontWeight = 'bold'
-    #   )
   })
 
   # ============================================================= #
   # ======================== PLOT =============================== #
   # ============================================================= #
 
-  Row = reactive({ nrow(filterData()) * 20 })
-  Cols = reactive({ ncol(filterData()) })
-  Wdth = reactive({ shinybrowser::get_width() })
-  # Hght = reactive({ shinybrowser::get_height() })
-
-  # output$plotWidth <- renderUI({
-  #   sliderInput('plotWidth', "Forest plot width",
-  #               min=1,
-  #               max=30,
-  #               value=ifelse(Wdth() > 1200, 20, 10))
-  # })
-  #
-  # output$plotHeight <- renderUI({
-  #   sliderInput('plotHeight', "Forest plot height", min=200,
-  #               max=5000,
-  #               value=Row())
-  # })
-
-
-  filterDataPlot <- reactive({
-    if (nrow(filterData()) > 250) {
-      filterData()[order(filterData()[, 'Rank'], abs(filterData()[, 'invTE'])), ][1:250, ]
-    } else {
-      filterData()
-    }
+  output$warning = renderText({
+    paste0("Because the number of comparisons is too large to be rendered in a unique figure (n=",
+           row_filtered_data(),
+           "), we display the comparisons with the higher level of evidence (higher GRADE)",
+           ", and the larger effect sizes (both positive and negative ones).")
+  })
+  observe({
+      toggleClass(selector = ".plot_warning", class="disappear",
+                  condition = !row_filtered_data() > 50)
   })
 
   output$forest_container <- renderUI({
-    shinycssloaders::withSpinner(
-      plotOutput('forest', height = nrow(filterDataPlot()) * 14 + 500),
-      # margin above loader ,
-      proxy.height="75px")
-  })
-  output$forest_warning = renderUI({
-    renderText({
-    if (nrow(filterData()) > 250) {
-      paste0("Because the number of comparisons is too large to be rendered in a unique figure (n=",
-             nrow(filterData()),
-             "), we display the comparisons with the highest level of evidence (High GRADE)",
-             ", and the largest effect sizes (both positive and negative ones).")
-    } else {
-      paste0("")
-    }
-    })
+    withSpinner(
+      plotOutput('forest', height = row_plot_data() * 14 + 300),
+      type = 5,
+      size = 0.5)
   })
 
 
-  mgen = reactive({
-    meta::metagen(TE=TE, seTE=seTE, data=filterDataPlot())
-  })
   mgenmod = reactive({
-    meta::update.meta(mgen(), subgroup = Rank,
+    mgen = meta::metagen(TE=TE, seTE=seTE, data=filterDataPlot())
+    meta::update.meta(mgen, subgroup = Rank,
                       subgroup.name = "GRADE, certainty of the evidence",
                       tau.common = FALSE)
   })
 
+  # output$forest <- renderPlot(
   output$forest <- renderPlot(
 
     meta::forest.meta(mgenmod(),
@@ -706,9 +805,9 @@ server <- function(input, output, session) {
                       sort.subgroup = TRUE,
                       colgap.left = "5mm",
                       colgap.right = "5mm",
-                      plotwidth = paste0(ifelse(Wdth() > 1400, 20,
-                                                ifelse(Wdth() > 1000, 10,
-                                                       ifelse(Wdth() > 800, 6, 4))), "cm"),
+                      plotwidth = paste0(ifelse(Wdth() > 1400, 14,
+                                                ifelse(Wdth() > 1000, 7,
+                                                       ifelse(Wdth() > 800, 5, 4))), "cm"),
                       # col.equi = "#91C8E7",
                       # fill.equi = "#CCE6F4",
                       # lty.equi = 3,
@@ -719,14 +818,144 @@ server <- function(input, output, session) {
                       hetstat = FALSE,
                       rightcols = c("effect.ci", "eNNT"),
                       rightlabs = c( "eSMD [95% CI]", "eNNT / eNNH"),
-                      leftcols = c("Meta_review", "Outcome", "Intervention", "Rank"),
-                      leftlabs = c("Meta_review", "Outcome", "Intervention", "GRADE"),
+                      leftcols = c("Age", "BD_stage", "Outcome_acro", "Intervention", "Comparison"), #"Meta_review",
+                      leftlabs = c("Age", "BD stage", "Outcome", "Intervention", "Control group"), #"Meta_review",
                       label.right = "=> Clinically beneficial",# col.label.right = "#49733E",
                       label.left = "Clinically harmful <="#, col.label.left = "#633434"
     )
 
   )
 
+  # ===================================================== #
+  # ======================== RADAR plot ================= #
+  # ===================================================== #
+  # updatePickerInput(session = session, inputId = "interventions_radar",
+  #                   choices = unique(dat$Intervention),
+  #                   selected="")
+  # updatePickerInput(session = session, inputId = "outcomes_radar",
+  #                   choices = unique(dat$Outcome),
+  #                   selected="")
+
+  dat_rad <- callModule(
+    module = selectizeGroupServer,
+    id = "my_filters_radar",
+    data = subset(dat, Comparison == "placebo (mono)"),
+    vars = c("Intervention", "Outcome")
+  )
+
+  outcomes_rad = reactive({
+    if (is.null(input[["my_filters_radar-Outcome"]])) {
+      names(tail(sort(table(dat$Outcome)), 3))
+    } else {
+      input[["my_filters_radar-Outcome"]]
+    }
+  })
+#
+  interventions_rad = reactive({
+    if (is.null(input[["my_filters_radar-Intervention"]])) {
+      names(tail(sort(table(dat$Intervention)), 3))
+    } else {
+      input[["my_filters_radar-Intervention"]]
+    }
+  })
+
+  dat_radar = reactive({
+    dat_rad() %>%
+      filter(Intervention %in% interventions_rad() &
+               Outcome %in% outcomes_rad()) %>%
+      group_by(paste(Intervention, Outcome)) %>%
+      #!!!! solve when several control groups
+      slice(1) %>%
+      as.data.frame()
+  })
+
+
+
+
+  output$radar_plot <- renderPlotly({
+
+    low = min(dat_radar()[, "TE"] - 0.2) #
+    up = max(dat_radar()[, "TE"] + 0.2) #
+    fig = plot_ly(
+          type = 'scatterpolar',
+          opacity = 0.7,
+          fill = 'toself',
+          mode="text") %>%
+      layout(
+        polar = list(
+          radialaxis = list(
+            angle = 90,
+
+            # color = ~dat_radar()[,"TE"],
+            # colors=c("red"),
+            # color = rep("A", length(dat_radar()[, "TE"])),
+            # colors=c("red"),
+            # cmid = 0,
+            visible = T,
+            range = c(low, up),
+            fillcolor = '#B6FFB4'
+
+
+          )
+        ),
+        showlegend = T
+      )
+
+
+    for (INT in unique(dat_radar()[,"Intervention"])) {
+      fig = fig %>%
+        add_trace(
+          r = subset(dat_radar(), Intervention == INT)[,"TE"],
+          theta = subset(dat_radar(), Intervention == INT)[,"Outcome"],
+          # fillcolor = "red",
+          fillcolor = list(colorscale='Viridis'),
+          marker = list(
+            size=10
+            # color = ~subset(dat_radar(), Intervention == INT)[,"TE"],
+            # colors = viridis_pal()(length(subset(dat_radar(), Intervention == INT)[,"TE"]))
+            # cmin = 0,
+            # cmax = 1,
+            # colorbar = dict(title='title'),
+            # colorscale = 'Viridis'
+          ),
+
+          hovertemplate = "SMD = %{r},
+          Outcome = %{theta}",
+          # text=~paste("SMD=", r, " (",
+          #               ifelse(subset(dat_radar(), Intervention == INT)[,"TE"] > 0, "clinically beneficial", "clinically harmful"), ")"),
+          name = INT
+
+        )
+    }
+
+    fig = fig %>%
+      add_trace(type = "pie", labels = "Clinically beneficial",
+                values = 1,
+                marker = list(colors = "green"),
+                hoverinfo = 'text',
+                text="This green zone indicates a clinically beneficial effect. \nYou can toggle the visibility of this zone by clicking on the 'Clinically beneficial' button in the legend.",
+                textinfo ="none",
+                hole = ifelse(low < 0 & up > 0,
+                              abs(low) / (abs(low) + abs(up)),
+                              ifelse(low < 0 & up < 0, 1,
+                                     ifelse(low > 0 & up > 0, 0, 1))),
+                opacity = 0.2)
+# ,visible = "legendonly"
+
+
+    fig
+
+  })
+
+
+  observeEvent(input$btn_alert, {
+    # Show a simple modal
+    shinyalert(text = "Some help to interpret the plot!",
+               imageUrl = "tuto_radar.png",
+               imageHeight = "500",
+               imageWidth = "700",
+               size = "l")
+  })
 
   # ============================================================= #
   # ======================== data for download ================== #

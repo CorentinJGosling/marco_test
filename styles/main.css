@@ -385,104 +385,22 @@ section {
   color: red;
 }
 
-#sec_hero {
-  position: relative;
-  min-height: 80vh;
-  padding-left: 4rem;
-  padding-right: 4rem;
+.parralax {
+  background-image: url("../background/image_1.png");
+  min-height: 90vh;
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no repeat;
+  background-size: cover;
+  margin-bottom: 2rem;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 30vh;
-}
-@media screen and (min-width: 768px) {
-  #sec_hero {
-    min-height: 60vh;
-  }
-}
-@media screen and (min-width: 1024px) {
-  #sec_hero {
-    min-height: 80vh;
-  }
-}
-#sec_hero .background-image {
-  position: absolute;
-  inset: 0;
-  margin: auto;
-  width: 350px;
-}
-@media screen and (min-width: 768px) {
-  #sec_hero .background-image {
-    width: 400px;
-  }
-}
-@media screen and (min-width: 1024px) {
-  #sec_hero .background-image {
-    width: 400px;
-  }
-}
-@media screen and (min-width: 1200px) {
-  #sec_hero .background-image {
-    width: 500px;
-  }
-}
-@media screen and (min-width: 1400px) {
-  #sec_hero .background-image {
-    width: 650px;
-  }
-}
-@media screen and (min-width: 1600px) {
-  #sec_hero .background-image {
-    width: 800px;
-  }
+  flex-direction: column;
+  gap: 3rem;
 }
 
-h1 {
-  font-weight: 600;
-  text-align: center;
-  max-width: 30ch;
-  animation: fade-in-first 2.5s forwards;
-}
-@media screen and (max-width: 480px) {
-  h1 {
-    font-size: 1.7rem;
-  }
-}
-@media screen and (min-width: 480px) {
-  h1 {
-    font-size: 1.9rem;
-  }
-}
-@media screen and (min-width: 768px) {
-  h1 {
-    font-size: 2rem;
-  }
-}
-@media screen and (min-width: 1024px) {
-  h1 {
-    font-size: 2.5rem;
-  }
-}
-@media screen and (min-width: 1600px) {
-  h1 {
-    font-size: 3rem;
-  }
-}
-
-@keyframes fade-in-first {
-  0% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
 .buttons {
-  margin-top: 2rem;
   display: flex;
   text-align: center;
   align-items: center;
@@ -511,9 +429,57 @@ h1 {
   background-color: rgb(181, 228, 238);
 }
 
-h2 {
-  font-weight: 400;
+h1 {
+  color: white;
+  font-weight: 600;
   text-align: center;
+  max-width: 30ch;
+  animation: fade-in-first 2.5s forwards;
+}
+@media screen and (max-width: 480px) {
+  h1 {
+    font-size: 1.7rem;
+  }
+}
+@media screen and (min-width: 480px) {
+  h1 {
+    font-size: 1.9rem;
+  }
+}
+@media screen and (min-width: 768px) {
+  h1 {
+    font-size: 2rem;
+  }
+}
+@media screen and (min-width: 1024px) {
+  h1 {
+    font-size: 2.5rem;
+  }
+}
+@media screen and (min-width: 1600px) {
+  h1 {
+    font-size: 4rem;
+  }
+}
+
+.parralax-one {
+  background-image: url("../background/image_2.png");
+  min-height: 100vh;
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no repeat;
+  background-size: cover;
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+h2 {
+  color: #fff;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 3rem;
 }
 @media screen and (max-width: 480px) {
   h2 {
@@ -522,20 +488,53 @@ h2 {
 }
 @media screen and (min-width: 480px) {
   h2 {
-    font-size: 1.6rem;
+    font-size: 2rem;
   }
 }
 @media screen and (min-width: 768px) {
   h2 {
-    font-size: 1.8rem;
+    font-size: 2.2rem;
   }
 }
 @media screen and (min-width: 1024px) {
   h2 {
-    font-size: 2.75rem;
+    font-size: 3.3rem;
   }
 }
 
+.parralax-two {
+  background-image: url("../background/image (23).png");
+  min-height: 100vh;
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no repeat;
+  background-size: cover;
+  margin-bottom: 2rem;
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+}
+
+.parralax-three {
+  background-image: url("../background/image (21).png");
+  min-height: 500px;
+  background-attachment: fixed;
+  background-position: bottom;
+  background-repeat: no repeat;
+  background-size: cover;
+  margin-bottom: 2rem;
+}
+
+@keyframes fade-in-first {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
 #sec_what,
 #sec_team,
 #sec_contact {
@@ -544,10 +543,6 @@ h2 {
 
 #sec_what {
   background-color: #d7e5e9;
-  min-height: 70vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
 }
 
 .sec2mid {
@@ -752,6 +747,9 @@ h2 {
 }
 
 .memb {
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 15px;
+  padding: 1rem 0;
   max-width: 400px;
   text-align: center;
   display: flex;
