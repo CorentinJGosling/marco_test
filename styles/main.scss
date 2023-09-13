@@ -432,7 +432,7 @@ section {
 // }
 
 .parralax {
-  background-image: url("../background/image_1.png");
+  background-image: url("../background/image_5.jpg");
   min-height: 90vh;
   background-attachment: fixed;
   background-position: center;
@@ -494,8 +494,8 @@ h1 {
   }
   animation: fade-in-first 2.5s forwards;
 }
-.parralax-one {
-  background-image: url("../background/image_2.png");
+.sec_what {
+  background-image: url("../background/image_6.jpg");
   min-height: 100vh;
   background-attachment: fixed;
   background-position: center;
@@ -525,8 +525,8 @@ h2 {
     font-size: 3.3rem;
   }
 }
-.parralax-two {
-  background-image: url("../background/image\ \(23\).png");
+#sec_team {
+  background-image: url("../background/image_4.jpg");
   min-height: 100vh;
   background-attachment: fixed;
   background-position: center;
@@ -572,9 +572,6 @@ h2 {
 // Section 2 ========================================================
 // Section 2 ========================================================
 // Section 2 ========================================================
-#sec_what {
-  background-color: #d7e5e9;
-}
 .sec2mid {
   display: grid;
   grid-template-columns: repeat(
@@ -657,80 +654,6 @@ h2 {
   }
 }
 
-// section 3 =======================================================
-// section 3 =======================================================
-// section 3 =======================================================
-// section 3 =======================================================
-// section 3 =======================================================
-// section 3 =======================================================
-#sec_database {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin-left: auto;
-  margin-right: auto;
-}
-.sec3text {
-  margin-top: 1rem;
-  font-size: 1rem;
-  font-weight: 400;
-  color: rgb(80, 80, 80);
-
-  max-width: 50ch;
-  text-align: center;
-}
-
-.btn_database {
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 1rem 4rem;
-  background-color: #a8a8e2;
-  border: 1px solid #000;
-  width: 50vw;
-  margin: 2rem 0;
-  border-radius: 10px;
-  transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
-  @media screen and (max-width: 1024px) {
-    width: 80vw;
-  }
-  @media screen and (max-width: 768px) {
-    width: 85vw;
-  }
-}
-.btn_database:hover {
-  transform: scale(1.005) translateZ(0);
-  background-color: #cdcdf1;
-  box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px;
-}
-.view_database {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  // padding: 1rem;
-  // background-color: #f0e5f9;
-  border: 1px solid #000;
-  cursor: pointer;
-  transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
-}
-
-.view_database img {
-  @media screen and (max-width: 1024px) {
-    width: 80vw;
-  }
-  @media screen and (max-width: 1024px) {
-    width: 95vw;
-  }
-}
-.view_database:hover {
-  transform: scale(1.005) translateZ(0);
-  background-color: #cdcdf1;
-  box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px;
-}
-
 // section 4 =================================================================
 // section 4 =================================================================
 // section 4 =================================================================
@@ -738,11 +661,6 @@ h2 {
 // section 4 =================================================================
 // section 4 =================================================================
 
-#sec_team {
-  h3 {
-    margin-top: 2rem;
-  }
-}
 .about_leaders,
 .about_team {
   display: grid;
@@ -947,14 +865,15 @@ h2 {
   }
 }
 h3 {
-  font-size: 1.4rem;
+  color: #fff;
+  font-size: 2rem;
   text-align: center;
   line-height: 200%;
   margin-left: 3rem;
   margin-right: 3rem;
   margin-top: 2rem;
   font-weight: bold;
-  border-bottom: 2px solid #000;
+  border-bottom: 5px solid #fff;
 }
 // section 5==================================================
 // section 5==================================================
