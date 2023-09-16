@@ -237,6 +237,20 @@ section {
   padding: 3rem 0rem;
 }
 #psycho_hero {
+  color: #fff;
+  background-image: url(https://cdn.pixabay.com/photo/2013/10/09/02/26/lake-192980_1280.jpg);
+  min-height: 70vh;
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no repeat;
+  background-size: cover;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 3rem;
+
   padding-top: 5rem;
   // border: 2px solid green;
   text-align: center;
@@ -246,14 +260,17 @@ section {
   align-items: center;
   p {
     margin-top: 1rem;
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     @media screen and (max-width: 768px) {
       font-size: 0.9rem;
     }
   }
   h1 {
-    color: #000;
     font-weight: 600;
+    text-shadow: 0.5px 0 0 #000, 0.5px 0.5px 0 #000, 0 0.5px 0 #000,
+      -0.5px 0.5px 0 #000, -0.5px 0 0 #000, -0.5px -0.5px 0 #000,
+      0 -0.5px 0 #000, 0.5px -0.5px 0 #000;
+
     max-width: 30ch;
     @media screen and (max-width: 480px) {
       font-size: 1.7rem;
