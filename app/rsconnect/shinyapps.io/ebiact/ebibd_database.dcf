@@ -5,7 +5,7 @@ account: ebiact
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 9154647
-bundleId: 7631218
+bundleId: 7692021
 url: https://ebiact.shinyapps.io/ebibd_database/
 asMultiple: FALSE
 asStatic: FALSE

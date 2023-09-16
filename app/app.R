@@ -128,7 +128,7 @@ selectizeGroupServer_modified <-
                         selected = "Bipolar Depression")
       updateSelectInput(inputId = "Comparison",
                         choices = unique(rv$data$Comparison),
-                        selected = "placebo (mono)")
+                        selected = "placebo")
     })
 
 
@@ -581,6 +581,9 @@ server <- function(input, output, session) {
   ###################################################
   # raw data stored locally
   dat <- readRDS("dat.RDS")
+  # dat <- dat %>%
+  #   filter(Age == "Adults" & BD_stage == "Bipolar Depression" & Comparison == "placebo")
+
   # https://www.davidsolito.com/post/conditional-drop-down-in-shiny/
   # https://heds.nz/posts/dependent-selectInputs-shiny/
   ######################################################
@@ -604,7 +607,13 @@ server <- function(input, output, session) {
 
   filterDataPlot <- reactive({
     if (row_filtered_data() > 50) {
-      filterData()[order(filterData()[, 'Rank'], abs(filterData()[, 'invTE'])), ][1:50, ]
+      # filterData()[order(filterData()[, 'Rank'], abs(filterData()[, 'invTE'])), ][1:50, ]
+      # dat[order(dat[, 'Rank'], abs(dat[, 'invTE'])), ][1:50, ]
+      # filterData() %>%
+      dat_sub = filterData() %>%
+        arrange(Rank, invTE)
+      dat_sub[1:50, ]
+
     } else {
       filterData()
     }
@@ -628,8 +637,8 @@ server <- function(input, output, session) {
 
     res <- filterData() %>%
     # res <- dat %>%
-      # filter(Age == "Adults" & BD_stage == "Bipolar Depression" & Intervention == "lithium (mono)" & Comparison == "placebo (mono)") %>%
-      # filter(Age == "Adults" & BD_stage == "Bipolar Depression" & Comparison == "placebo (mono)") %>%
+      # filter(Age == "Adults" & BD_stage == "Bipolar Depression" & Intervention == "lithium (mono)" & Comparison == "placebo") %>%
+      # filter(Age == "Adults" & BD_stage == "Bipolar Depression" & Comparison == "placebo") %>%
       # filter(Age == "Adults" & BD_stage == "Bipolar Depression" &
       #          Intervention == "aripiprazole (mono)" &
       #          Comparison == "placebo (mono)") %>%
@@ -798,7 +807,7 @@ server <- function(input, output, session) {
   output$forest <- renderPlot(
 
     meta::forest.meta(mgenmod(),
-                      sortvar = filterDataPlot()[, "invTE"],
+                      # sortvar = filterDataPlot()[, "invTE"],
                       xlab = "Equivalent Standardized Mean Difference",
                       common = FALSE,
                       subgroup.hetstat = FALSE,
@@ -834,7 +843,7 @@ server <- function(input, output, session) {
   dat_rad <- callModule(
     module = selectizeGroupServer,
     id = "my_filters_radar",
-    data = subset(dat, Comparison == "placebo (mono)"),
+    data = subset(dat, Comparison == "placebo"),
     vars = c("Intervention", "Outcome")
   )
 

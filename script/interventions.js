@@ -24,30 +24,65 @@ navLinksli.forEach((link) => {
   });
 });
 
-const categoryButtons = document.querySelectorAll('.category-buttons button');
-const cards = document.querySelectorAll('.card');
+const categoryButtons = document.querySelectorAll(".category-buttons button");
+const cards = document.querySelectorAll(".card");
 
-categoryButtons.forEach(button => {
-  button.addEventListener('click', () => {
-    const category = button.getAttribute('data-category');
-    cards.forEach(card => {
-      if (category === 'all' || card.getAttribute('data-category') === category) {
-        card.classList.add('show');
+categoryButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    const category = button.getAttribute("data-category");
+    cards.forEach((card) => {
+      if (
+        category === "all" ||
+        card.getAttribute("data-category") === category
+      ) {
+        card.classList.add("show");
       } else {
-        card.classList.remove('show');
+        card.classList.remove("show");
       }
     });
-    categoryButtons.forEach(btn => {
-      btn.classList.remove('active');
+    categoryButtons.forEach((btn) => {
+      btn.classList.remove("active");
     });
-    button.classList.add('active');
+    button.classList.add("active");
   });
 });
 
 // Show all cards by default
-cards.forEach(card => {
-  card.classList.add('show');
+cards.forEach((card) => {
+  card.classList.add("show");
 });
 
 // Activate the "All" button by default
-categoryButtons[0].classList.add('active');
+categoryButtons[0].classList.add("active");
+
+// MODALS --------------------
+var modals = document.getElementsByClassName("modal");
+var modalOpenBtn = document.getElementsByClassName("modalOpenBtn");
+var currentModal = null;
+
+// Function to open modal by id
+function openModal(id) {
+  for (i = 0; i < modals.length; i++) {
+    if (modals[i].getAttribute("id") == id) {
+      currentModal = modals[i];
+      currentModal.style.display = "block";
+      break;
+    }
+  }
+}
+
+// When the user clicks the button, open modal with the same id
+modalOpenBtn.onclick = function () {
+  let currentID = modalOpenBtn.getAttribute("id");
+  openModal(currentID);
+};
+
+// When the user clicks anywhere outside of the modal or the X, close
+window.onclick = function (event) {
+  if (
+    event.target == currentModal ||
+    event.target.getAttribute("class") == "modalClose"
+  ) {
+    currentModal.style.display = "none";
+  }
+};

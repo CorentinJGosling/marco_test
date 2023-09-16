@@ -51,45 +51,181 @@
         <button data-category="category2">Pharmacological</button>
         <button data-category="category3">Complementary</button>
       </div>
-
+      <!-- Pharmacological  Psychosocial  Complementary-->
       <div class="card-container">
-        <div class="card" data-category="category2">
+        <div class="card" data-category="category3">
           <div class="card-image">
             <img
-              src="https://cdn.pixabay.com/photo/2016/12/05/19/43/pill-1884775_1280.jpg"
+              src="https://www.amenclinics.com/wp-content/uploads/2021/10/Blog-How-Bright-Light-Therapy-Improves-Multiple-Mental-Health-Issues-800x400-1.jpg"
               alt="Card image"
             />
           </div>
           <div class="card-content">
-            <div class="card-category">Pharmacological</div>
-            <h3 class="card-title">Risperidone</h3>
+            <div class="card-category">Complementary</div>
+            <h3 class="card-title">Bright light therapy</h3>
             <p class="card-text">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. In
-              euismod ipsum et dui venenatis laoreet. Sed sed ligula eu turpis
-              bibendum luctus vel ac arcu.
+              Bright light therapy (BLT), also known as phototherapy, was
+              originally used to treat patients with seasonal affective disorder
+              and refers to the use of glare therapy to treat mood symptoms
+              [...].
             </p>
-            <a href="#" class="card-link">Read more</a>
+            <!-- <a href="#" class="card-link">Read more</a>
+            <a href="#" class="card-link">Read more</a> -->
+            <button
+              id="modalA"
+              class="modalOpenBtn"
+              onclick="openModal('modalA')"
+            >
+              Read more
+            </button>
           </div>
         </div>
+        <div id="modalA" class="modal">
+          <div class="modalContent">
+            <span class="modalClose">×</span>
+            <div>
+              <div class="modalHead">Bright light therapy (BLT)</div>
+              <div class="modalBody">
+                Bright light therapy (BLT), also known as phototherapy, was
+                originally used to treat patients with seasonal affective
+                disorder and refers to the use of glare therapy to treat mood
+                symptoms. The International Society of Bipolar Disorders (ISBD)
+                Task Force on Chronobiology and Chronotherapy recommended BLT as
+                the strongest evidence among current chronotherapeutic options
+                in the acute treatment of bipolar depression.
+              </div>
+              <ul class="modalRef">
+                <li>
+                  Takeshima M, Utsumi T, Aoki Y, Wang Z, Suzuki M, Okajima I,
+                  Watanabe N, Watanabe K, Takaesu Y. Efficacy and safety of
+                  bright light therapy for manic and depressive symptoms in
+                  patients with bipolar disorder: A systematic review and
+                  meta-analysis. Psychiatry Clin Neurosci. 2020; 74(4):247-256.
+                  doi: 10.1111/pcn.12976.
+                </li>
+                <li>
+                  Wang S, Zhang Z, Yao L, Ding N, Jiang L, Wu Y. Bright light
+                  therapy in the treatment of patients with bipolar disorder: A
+                  systematic review and meta-analysis. PLoS One. 2020;
+                  15(5):e0232798. doi: 10.1371/journal.pone.0232798.
+                </li>
+                <li>
+                  Gottlieb JF, Benedetti F, Geoffroy PA, Henriksen TEG, Lam RW,
+                  Murray G, Phelps J, Sit D, Swartz HA, Crowe M, Etain B, Frank
+                  E, Goel N, Haarman BCM, Inder M, Kallestad H, Jae Kim S,
+                  Martiny K, Meesters Y, Porter R, Riemersma-van der Lek RF,
+                  Ritter PS, Schulte PFJ, Scott J, Wu JC, Yu X, Chen S. The
+                  chronotherapeutic treatment of bipolar disorders: A systematic
+                  review and practice recommendations from the ISBD task force
+                  on chronotherapy and chronobiology. Bipolar Disord. 2019;
+                  21(8):741-773. doi: 10.1111/bdi.12847.
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
         <div class="card" data-category="category1">
           <div class="card-image">
             <img
-              src="https://cdn.pixabay.com/photo/2018/09/04/10/16/feedback-3653368_1280.jpg"
+              src="https://cdn.pixabay.com/photo/2018/01/24/19/49/friendship-day-3104635_1280.jpg"
               alt="Card image"
             />
           </div>
           <div class="card-content">
             <div class="card-category">Psychosocial</div>
-            <h3 class="card-title">Social skills groups</h3>
+            <h3 class="card-title">Carer-focused intervention</h3>
             <p class="card-text">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. In
-              euismod ipsum et dui venenatis laoreet. Sed sed ligula eu turpis
-              bibendum luctus vel ac arcu.
+              Psychological interventions that aim to improve the experience of
+              caregiving in bipolar disorder. Common components of these
+              psychoeducational interventions include [...]
             </p>
-            <a href="#" class="card-link">Read more</a>
+            <button
+              id="modalB"
+              class="modalOpenBtn"
+              onclick="openModal('modalB')"
+            >
+              Read more
+            </button>
           </div>
         </div>
-        <div class="card" data-category="category3">
+        <div id="modalB" class="modal">
+          <div class="modalContent">
+            <span class="modalClose">×</span>
+            <div>
+              <div class="modalHead">Carer-focused intervention</div>
+              <div class="modalBody">
+                Psychological interventions that aim to improve the experience
+                of caregiving in bipolar disorder. Common components of these
+                psychoeducational interventions include education about the
+                nature of bipolar disorder, triggers and warning signs,
+                treatment, management, and the impact on and role of caregivers.
+              </div>
+              <ul class="modalRef">
+                <li>
+                  Baruch E, Pistrang N, Barker C. Psychological interventions
+                  for caregivers of people with bipolar disorder: A systematic
+                  review and meta-analysis. J Affect Disord. 2018; 236:187-198.
+                  doi: 10.1016/j.jad.2018.04.077
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" data-category="category1">
+          <div class="card-image">
+            <img
+              src="https://cdn.pixabay.com/photo/2014/11/14/18/08/psychology-531071_1280.jpg"
+              alt="Card image"
+            />
+          </div>
+          <div class="card-content">
+            <div class="card-category">Psychosocial</div>
+            <h3 class="card-title">Cognitive Behavioral Therapy</h3>
+            <p class="card-text">
+              Cognitive Behavioral Therapy (CBT) is usually given in an
+              individual or group format and aims at modifying maladaptive
+              thoughts through cognitive restructuring. [...]
+            </p>
+            <button
+              id="modalC"
+              class="modalOpenBtn"
+              onclick="openModal('modalC')"
+            >
+              Read more
+            </button>
+          </div>
+        </div>
+        <div id="modalC" class="modal">
+          <div class="modalContent">
+            <span class="modalClose">×</span>
+            <div>
+              <div class="modalHead">Cognitive Behavioral Therapy (CBT)</div>
+              <div class="modalBody">
+                Cognitive Behavioral Therapy (CBT) is usually given in an
+                individual or group format and aims at modifying maladaptive
+                thoughts through cognitive restructuring. CBT has also
+                behavioral components including interpersonal skills training,
+                behavioral activation, or scheduling pleasurable life events to
+                provide social reinforcement, problem solving, and “third-wave”
+                components such as mindfulness, acceptance, and commitment. Some
+                CBT programs may have only elements of behavioral or third-wave
+                therapies without cognitive restructuring.
+              </div>
+              <ul class="modalRef">
+                <li>
+                  Miklowitz DJ, Efthimiou O, Furukawa TA, Scott J, McLaren R,
+                  Geddes JR, Cipriani A. Adjunctive Psychotherapy for Bipolar
+                  Disorder: A Systematic Review and Component Network
+                  Meta-analysis. JAMA Psychiatry. 2021; 78(2):141-150. doi:
+                  10.1001/jamapsychiatry.2020.2993.
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <!-- <div class="card" data-category="category3">
           <div class="card-image">
             <img
               src="https://cdn.pixabay.com/photo/2015/12/06/18/28/capsules-1079838_1280.jpg"
@@ -124,9 +260,7 @@
             </p>
             <a href="#" class="card-link">Read more</a>
           </div>
-        </div>
-
-        <!-- more cards here -->
+        </div> -->
       </div>
     </section>
     <script src="../script/interventions.js"></script>
