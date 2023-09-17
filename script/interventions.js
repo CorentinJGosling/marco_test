@@ -86,3 +86,156 @@ window.onclick = function (event) {
     currentModal.style.display = "none";
   }
 };
+
+var complementaryColor = "#43DA8A",
+  pharmaColor = "#DA8143",
+  psyColor = "#43ACDA";
+
+Highcharts.chart("container", {
+  chart: {
+    type: "networkgraph",
+    marginTop: 80,
+  },
+
+  title: {
+    text: "List of all interventions contained in the database",
+  },
+
+  subtitle: {
+    text: "Retrieve a description of the key interventions below",
+  },
+
+  plotOptions: {
+    networkgraph: {
+      keys: ["from", "to"],
+      layoutAlgorithm: {
+        enableSimulation: true,
+        integration: "verlet",
+        linkLength: 100,
+      },
+    },
+  },
+
+  series: [
+    {
+      marker: {
+        radius: 23,
+      },
+      dataLabels: {
+        enabled: true,
+        linkFormat: "",
+        allowOverlap: true,
+        style: {
+          fontSize: "0.8rem",
+        },
+      },
+      data: [
+        ["Complementary", "acetyl-L-carnitine+alpha-lipoic acid"],
+        ["Complementary", "acetylsalicylic acid"],
+        ["Complementary", "agomelatin"],
+        ["Complementary", "allopurinol"],
+        ["Pharmacological", "amitriptyline"],
+        ["Pharmacological", "armodafinil"],
+        ["Pharmacological", "asenapine"],
+        ["Pharmacological", "brexpiprazole"],
+
+        ["Psychosocial", "CBT"],
+        ["Psychosocial", "carer-focused"],
+        ["Psychosocial", "family focused"],
+        ["Psychosocial", "creatine"],
+
+        ["Pharmacological", "Complementary"],
+        ["Pharmacological", "Psychosocial"],
+        ["Complementary", "Psychosocial"],
+      ],
+      nodes: [
+        {
+          id: "Complementary",
+          color: complementaryColor,
+          marker: {
+            radius: 33,
+          },
+          dataLabels: {
+            style: {
+              fontSize: "1.2rem",
+            },
+          },
+        },
+
+        {
+          id: "Psychosocial",
+          color: psyColor,
+          marker: {
+            radius: 33,
+          },
+          dataLabels: {
+            style: {
+              fontSize: "1.2rem",
+            },
+          },
+        },
+        {
+          id: "Pharmacological",
+          color: pharmaColor,
+          marker: {
+            radius: 33,
+          },
+          dataLabels: {
+            style: {
+              fontSize: "1.2rem",
+            },
+          },
+        },
+
+        {
+          id: "acetyl-L-carnitine+alpha-lipoic acid",
+          color: complementaryColor,
+        },
+        {
+          id: "acetylsalicylic acid",
+          color: complementaryColor,
+        },
+        {
+          id: "agomelatin",
+          color: complementaryColor,
+        },
+        {
+          id: "allopurinol",
+          color: complementaryColor,
+        },
+        {
+          id: "amitriptyline",
+          color: pharmaColor,
+        },
+        {
+          id: "armodafinil",
+          color: pharmaColor,
+        },
+        {
+          id: "asenapine",
+          color: pharmaColor,
+        },
+        {
+          id: "brexpiprazole",
+          color: pharmaColor,
+        },
+        {
+          id: "CBT",
+          color: psyColor,
+        },
+        {
+          id: "carer-focused",
+          color: psyColor,
+        },
+        {
+          id: "family focused",
+          color: psyColor,
+        },
+        {
+          id: "creatine",
+          color: psyColor,
+        },
+      ],
+    },
+  ],
+});

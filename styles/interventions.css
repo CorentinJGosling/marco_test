@@ -533,4 +533,11 @@ section {
 .modalRef li {
   text-indent: -0.5rem;
   margin-bottom: 0.5rem;
+}
+
+#container {
+  min-width: 320px;
+  max-width: 800px;
+  margin: 0 auto;
+  height: 500px;
 }/*# sourceMappingURL=interventions.css.map */
