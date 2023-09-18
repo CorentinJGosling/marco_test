@@ -7,7 +7,6 @@
 * {
   margin: 0;
   padding: 0;
-  font: inherit;
   font-family: "Avenir Next LT Pro", sans-serif;
   scroll-behavior: smooth;
 }
@@ -535,9 +534,11 @@ section {
   margin-bottom: 0.5rem;
 }
 
-#container {
-  min-width: 320px;
-  max-width: 800px;
-  margin: 0 auto;
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+#chartdiv {
+  width: 100%;
   height: 500px;
 }/*# sourceMappingURL=interventions.css.map */

@@ -86,7 +86,17 @@ exp_dat = res[,c(
 rio::export(exp_dat, "dat.txt")
 saveRDS(exp_dat, "dat.RDS")
 # source("plot_umb.R")
+exp = res %>%
+  group_by(Intervention) %>%
+  summarise(n=n())
 
+text = NULL
+for (i in 1:2) {
+  text = paste0(text, ", ", paste(rep(exp[i, "Intervention"], exp[i, "n"]), collapse=", "))
+}
+
+paste()
+rio::export()
 #
 # # View the resulting categories
 # categories
